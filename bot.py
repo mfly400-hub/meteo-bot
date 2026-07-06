@@ -257,7 +257,7 @@ def handle_time_callback(call):
                      f"🔺 **980 м:** {w_speed_980} м/с | Напрямок: {w_dir_980}°\n" \
                      f"🔺 **1450 м:** {w_speed_1450} м/с | Напрямок: {w_dir_1450}°\n" \
                      f"🔺 **1500 м:** {w_speed_1500} м/с | Напрямок: {w_dir_1500}°\n" \
-                     f"🔺 **1950 м:** {w_speed_1950} м/с | Напрямок: {w_dir_1950}°\n" \        
+                     f"🔺 **1950 м:** {w_speed_1950} м/с | Напрямок: {w_dir_1950}°\n" \
                      f"🛫 Веселих польотів! RsPz"
                      
             bot.send_message(chat_id, report, parse_mode="Markdown")
