@@ -3,7 +3,7 @@ import requests
 from telebot import types
 
 # Токен бота
-TOKEN = 'ВАШ_ТОКЕН_ТУТ'
+TOKEN = "8679032582:AAGljGFF_n40NgLynM4Jtndyr_tHg74JgZI"
 bot = telebot.TeleBot(TOKEN)
 
 def get_icing_emoji(t):
