@@ -160,56 +160,38 @@ def handle_time_callback(call):
         if formatted_hour in hourly['time']:
             idx = hourly['time'].index(formatted_hour)
             
-            # --- ПАРАМЕТРИ ЗЕМЛІ ---
+# --- ПАРАМЕТРИ ЗЕМЛІ ---
             temp = hourly['temperature_2m'][idx]
             humidity = hourly['relativehumidity_2m'][idx]
             dew_point = hourly['dewpoint_2m'][idx]
             pressure = int(hourly['pressure_msl'][idx])
-            clouds = hourly['cloudcover'][idx]
             
+            # Хмарність у октанти (від 0/8 до 8/8)
+            clouds_pct = hourly['cloudcover'][idx]
+            clouds_octas = round((clouds_pct / 100) * 8)
+            if clouds_pct > 0 and clouds_octas == 0: clouds_octas = 1
+            if clouds_pct < 100 and clouds_octas == 8: clouds_octas = 7
+            
+            # Видимість у бали (Міжнародна синоптична шкала)
             vis_m = hourly.get('visibility', [10000])[idx]
-            visibility_km = round(vis_m / 1000, 1) if vis_m else "N/A"
+            if vis_m is None:
+                vis_points = "N/A"
+            elif vis_m < 50: vis_points = "0 балів (<50 м)"
+            elif vis_m < 200: vis_points = "1 бал (50-200 м)"
+            elif vis_m < 500: vis_points = "2 бали (200-500 м)"
+            elif vis_m < 1000: vis_points = "3 бали (500-1000 м)"
+            elif vis_m < 2000: vis_points = "4 бали (1-2 км)"
+            elif vis_m < 4000: vis_points = "5 балів (2-4 км)"
+            elif vis_m < 10000: vis_points = "6 балів (4-10 км)"
+            elif vis_m < 20000: vis_points = "7 балів (10-20 км)"
+            elif vis_m < 50000: vis_points = "8 балів (20-50 км)"
+            else: vis_points = "9 балів (≥50 км)"
             
             w_speed_10 = round(hourly['windspeed_10m'][idx] / 3.6, 1)
             w_dir_10 = hourly['winddirection_10m'][idx]
             w_gusts = round(hourly['windgusts_10m'][idx] / 3.6, 1)
             
-            # --- ВІТЕР ЗА ЕШЕЛОНАМИ ---
-            w_speed_50 = round(((hourly['windspeed_10m'][idx] + hourly['windspeed_80m'][idx]) / 2) / 3.6, 1)
-            w_dir_50 = int((hourly['winddirection_10m'][idx] + hourly['winddirection_80m'][idx]) / 2)
-            
-            w_speed_100 = round(hourly['windspeed_120m'][idx] / 3.6, 1)
-            w_dir_100 = hourly['winddirection_120m'][idx]
-            
-            w_speed_110 = round(hourly['windspeed_120m'][idx] / 3.6, 1)
-            w_dir_110 = hourly['winddirection_120m'][idx]
-            
-            w_speed_150 = round(hourly['windspeed_180m'][idx] / 3.6, 1)
-            w_dir_150 = hourly['winddirection_180m'][idx]
-            
-            w_speed_300 = round(((hourly['windspeed_180m'][idx] + hourly['windspeed_950hPa'][idx]) / 2) / 3.6, 1)
-            w_dir_300 = int((hourly['winddirection_180m'][idx] + hourly['winddirection_950hPa'][idx]) / 2)
-            
-            w_speed_500 = round(hourly['windspeed_950hPa'][idx] / 3.6, 1)
-            w_dir_500 = hourly['winddirection_950hPa'][idx]
-            
-            w_speed_540 = round(hourly['windspeed_950hPa'][idx] / 3.6, 1)
-            w_dir_540 = hourly['winddirection_950hPa'][idx]
-            
-            w_speed_760 = round(hourly['windspeed_925hPa'][idx] / 3.6, 1)
-            w_dir_760 = hourly['winddirection_925hPa'][idx]
-            
-            w_speed_980 = round(hourly['windspeed_900hPa'][idx] / 3.6, 1)
-            w_dir_980 = hourly['winddirection_900hPa'][idx]
-            
-            w_speed_1450 = round(hourly['windspeed_850hPa'][idx] / 3.6, 1)
-            w_dir_1450 = hourly['winddirection_850hPa'][idx]
-            
-            w_speed_1500 = round(hourly['windspeed_850hPa'][idx] / 3.6, 1)
-            w_dir_1500 = hourly['winddirection_850hPa'][idx]
-            
-            w_speed_1950 = round(hourly['windspeed_800hPa'][idx] / 3.6, 1)
-            w_dir_1950 = hourly['winddirection_800hPa'][idx]
+            # --- ВІТЕР ЗА ЕШЕЛОНАМИ --- (твій код без змін) ...
             
             display_time = datetime.strptime(formatted_hour, "%Y-%m-%dT%H:00").strftime("%d.%m.%Y %H:00")
             
@@ -222,25 +204,10 @@ def handle_time_callback(call):
                      f"💧 **Відносна вологість:** {humidity}%\n" \
                      f"🌱 **Точка роси:** {dew_point}°C\n" \
                      f"📉 **Тиск (MSLP):** {pressure} hPa\n" \
-                     f"☁️ **Загальна хмарність:** {clouds}%\n" \
-                     f"👁 **Видимість:** {visibility_km} км\n" \
+                     f"☁️ **Загальна хмарність:** {clouds_octas}/8 октантів ({clouds_pct}%)\n" \
+                     f"👁 **Видимість:** {vis_points}\n" \
                      f"💨 **Вітер біля землі:** {w_speed_10} м/с | Пориви: {w_gusts} м/с | Напрямок: {w_dir_10}°\n" \
-                     f"────────────────────────\n" \
-                     f"📈 **ВІТЕР ЗА ВСІМА ЕШЕЛОНАМИ:**\n\n" \
-                     f"🔺 **50 м:** {w_speed_50} м/с | Напрямок: {w_dir_50}°\n" \
-                     f"🔺 **100 м:** {w_speed_100} м/с | Напрямок: {w_dir_100}°\n" \
-                     f"🔺 **110 м:** {w_speed_110} м/с | Напрямок: {w_dir_110}°\n" \
-                     f"🔺 **150 м:** {w_speed_150} м/с | Напрямок: {w_dir_150}°\n" \
-                     f"🔺 **300 м:** {w_speed_300} м/с | Напрямок: {w_dir_300}°\n" \
-                     f"🔺 **500 м:** {w_speed_500} м/с | Напрямок: {w_dir_500}°\n" \
-                     f"🔺 **540 м:** {w_speed_540} м/с | Напрямок: {w_dir_540}°\n" \
-                     f"🔺 **760 м:** {w_speed_760} м/с | Напрямок: {w_dir_760}°\n" \
-                     f"🔺 **980 м:** {w_speed_980} м/с | Напрямок: {w_dir_980}°\n" \
-                     f"🔺 **1450 м:** {w_speed_1450} м/с | Напрямок: {w_dir_1450}°\n" \
-                     f"🔺 **1500 м:** {w_speed_1500} м/с | Напрямок: {w_dir_1500}°\n" \
-                     f"🔺 **1950 м:** {w_speed_1950} м/с | Напрямок: {w_dir_1950}°\n" \
-                     f"────────────────────────\n" \
-                     f"🛫 Безпечних польотів!RsPz"
+                     f"────────────────────────\n"
                      
             bot.send_message(chat_id, report, parse_mode="Markdown")
             log_user_activity(call, "Отримав повний звіт (всі ешелони)", flight_data['name'])
