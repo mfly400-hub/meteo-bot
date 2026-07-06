@@ -17,7 +17,7 @@ logging.basicConfig(
 TOKEN = "8679032582:AAGljGFF_n40NgLynM4Jtndyr_tHg74JgZI"
 bot = telebot.TeleBot(TOKEN)
 
-target_heights = [50, 100, 110, 150, 300, 500, 540, 760, 980, 1450, 1500, 1950]
+# target_heights = [50, 100, 110, 150, 300, 500, 540, 760, 980, 1450, 1500, 1950]
 
 user_flights = {}
 known_users = set()
@@ -42,18 +42,18 @@ def start(message):
            "Надішли мені **координати**, **посилання на карту** або **назву міста**, щоб отримати повний звіт по всіх ешелонах висоти."
     bot.send_message(message.chat.id, text)
     
-@bot.message_handler(commands=['set_h'])
-def set_heights(message):
-    global target_heights
-    try:
-        cmd = message.text.replace('/set_h', '').strip()
-        if not cmd:
-            bot.reply_to(message, f"Поточні висоти: {', '.join(map(str, target_heights))} м.\nЩоб змінити, напишіть: /set_h 100, 500, 1000")
-            return
-        target_heights = sorted([int(x.strip()) for x in cmd.split(',')])
-        bot.reply_to(message, f"✅ Висоти оновлено: {', '.join(map(str, target_heights))} м.")
-    except:
-        bot.reply_to(message, "❌ Помилка! Введіть числа через кому: /set_h 100, 500")
+# @bot.message_handler(commands=['set_h'])
+# def set_heights(message):
+#     global target_heights
+#     try:
+#         cmd = message.text.replace('/set_h', '').strip()
+#        if not cmd:
+#           bot.reply_to(message, f"Поточні висоти: {', '.join(map(str, target_heights))} м.\nЩоб змінити, напишіть: /set_h 100, 500, 1000")
+#             return
+#         target_heights = sorted([int(x.strip()) for x in cmd.split(',')])
+#         bot.reply_to(message, f"✅ Висоти оновлено: {', '.join(map(str, target_heights))} м.")
+#     except:
+#         bot.reply_to(message, "❌ Помилка! Введіть числа через кому: /set_h 100, 500")
         
 @bot.message_handler(content_types=['text'])
 def handle_text(message):
@@ -254,8 +254,8 @@ def handle_time_callback(call):
                      f"🔺 **1450 м:** {w_speed_1450} м/с | Напрямок: {w_dir_1450}°\n" \
                      f"🔺 **1500 м:** {w_speed_1500} м/с | Напрямок: {w_dir_1500}°\n" \
                      f"🔺 **1950 м:** {w_speed_1950} м/с | Напрямок: {w_dir_1950}°\n" \
-                     f"────────────────────────\n" \
-                    f"💡 Щоб змінити висоти, надішліть: /set_h 100, 300, 1500\n" \
+ #                     f"────────────────────────\n" \
+ #                    f"💡 Щоб змінити висоти, надішліть: /set_h 100, 300, 1500\n" \
                     f"────────────────────────\n" \
                     f"🛫 Безпечних польотів!RsPz"
                      
