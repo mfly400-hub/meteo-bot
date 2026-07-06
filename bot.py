@@ -191,7 +191,44 @@ def handle_time_callback(call):
             w_dir_10 = hourly['winddirection_10m'][idx]
             w_gusts = round(hourly['windgusts_10m'][idx] / 3.6, 1)
             
-            # --- ВІТЕР ЗА ЕШЕЛОНАМИ --- (твій код без змін) ...
+            # --- ВІТЕР ЗА ЕШЕЛОНАМИ --- 
+            w_speed_50 = round(((hourly['windspeed_10m'][idx] + hourly['windspeed_80m'][idx]) / 2) / 3.6, 1)
+            w_dir_50 = int((hourly['winddirection_10m'][idx] + hourly['winddirection_80m'][idx]) / 2)
+            
+            w_speed_100 = round(hourly['windspeed_120m'][idx] / 3.6, 1)
+            w_dir_100 = hourly['winddirection_120m'][idx]
+            
+            w_speed_110 = round(hourly['windspeed_120m'][idx] / 3.6, 1)
+            w_dir_110 = hourly['winddirection_120m'][idx]
+            
+            w_speed_150 = round(hourly['windspeed_180m'][idx] / 3.6, 1)
+            w_dir_150 = hourly['winddirection_180m'][idx]
+            
+            w_speed_300 = round(((hourly['windspeed_180m'][idx] + hourly['windspeed_950hPa'][idx]) / 2) / 3.6, 1)
+            w_dir_300 = int((hourly['winddirection_180m'][idx] + hourly['winddirection_950hPa'][idx]) / 2)
+            
+            w_speed_500 = round(hourly['windspeed_950hPa'][idx] / 3.6, 1)
+            w_dir_500 = hourly['winddirection_950hPa'][idx]
+            
+            w_speed_540 = round(hourly['windspeed_950hPa'][idx] / 3.6, 1)
+            w_dir_540 = hourly['winddirection_950hPa'][idx]
+            
+            w_speed_760 = round(hourly['windspeed_925hPa'][idx] / 3.6, 1)
+            w_dir_760 = hourly['winddirection_925hPa'][idx]
+            
+            w_speed_980 = round(hourly['windspeed_900hPa'][idx] / 3.6, 1)
+            w_dir_980 = hourly['winddirection_900hPa'][idx]
+            
+            w_speed_1450 = round(hourly['windspeed_850hPa'][idx] / 3.6, 1)
+            w_dir_1450 = hourly['winddirection_850hPa'][idx]
+            
+            w_speed_1500 = round(hourly['windspeed_850hPa'][idx] / 3.6, 1)
+            w_dir_1500 = hourly['winddirection_850hPa'][idx]
+            
+            w_speed_1950 = round(hourly['windspeed_800hPa'][idx] / 3.6, 1)
+            w_dir_1950 = hourly['winddirection_800hPa'][idx]
+            
+
             
             display_time = datetime.strptime(formatted_hour, "%Y-%m-%dT%H:00").strftime("%d.%m.%Y %H:00")
             
