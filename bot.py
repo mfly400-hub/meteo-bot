@@ -4,7 +4,7 @@ import re
 import logging
 from datetime import datetime, timedelta
 
-# Логирование только в консоль (на сервере Railway файлы создавать нельзя)
+# Логування лише в консоль (на серверах Railway лог-файли створювати не потрібно)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 TOKEN = "8679032582:AAGljGFF_n40NgLynM4Jtndyr_tHg74JgZI"
@@ -108,6 +108,10 @@ def handle_text(message):
             logging.error(f"Помилка геокодера: {e}")
             return
 
+        # Захист від пустих значень
+        if lat is None or lon is None:
+            return
+
     if lat is not None and lon is not None:
         user_flights[chat_id] = {'lat': lat, 'lon': lon, 'name': location_name}
         
@@ -118,7 +122,7 @@ def handle_text(message):
             future = now + timedelta(hours=hours)
             keyboard.add(telebot.types.InlineKeyboardButton(f"⏳ Через {hours} год", callback_data=f"time_{future.strftime('%Y-%m-%dT%H:00')}"))
             
-        bot.send_message(chat_id, f"📍 Локацію визначено: {location_name}\nОберіть час:", reply_markup=keyboard)
+        bot.send_message(chat_id, f"📍 Локацію визначено: {location_name}\nОберіть час для прогнозу:", reply_markup=keyboard)
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('time_'))
 def handle_time_callback(call):
@@ -136,7 +140,7 @@ def handle_time_callback(call):
     formatted_hour = call.data.split('_')[1]
     
     bot.edit_message_reply_markup(chat_id, call.message.message_id, reply_markup=None)
-    bot.send_message(chat_id, "⏳ Отримую авіаційні дані...")
+    bot.send_message(chat_id, "⏳ Отримую авіаційні метеодані...")
     
     url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}" \
           f"&hourly=temperature_2m,relativehumidity_2m,dewpoint_2m,visibility,pressure_msl,cloudcover,windspeed_10m,winddirection_10m,windgusts_10m," \
@@ -223,4 +227,21 @@ def handle_time_callback(call):
             
             for h in target_heights:
                 spd, dr = speed_map.get(h, (0, 0))
-                report +=
+                report += f"🔺 **{h} м:** {spd} м/с | Напрямок: {dr}°\n"
+                
+            report += f"────────────────────────\n" \
+                      f"🌐 **Вінді (Карта вітрів):** [Відкрити](https://www.windy.com/?{lat},{lon},10)\n" \
+                      f"💡 Змінити висоти: /set_h 100, 300, 500\n" \
+                      f"🛫 Безпечних польотів! RsPz"
+            
+            bot.send_message(chat_id, report, parse_mode="Markdown", disable_web_page_preview=True)
+            log_user_activity(call, "Видав звіт", flight_data['name'])
+            
+        else:
+            bot.send_message(chat_id, "❌ Дані на цей час відсутні.")
+            
+    except Exception as e:
+        bot.send_message(chat_id, "❌ Помилка розрахунку.")
+        logging.error(f"Помилка погоди: {e}")
+
+bot.polling(none_stop=True)
