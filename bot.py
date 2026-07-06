@@ -207,7 +207,8 @@ def handle_time_callback(call):
                      f"☁️ **Загальна хмарність:** {clouds_octas}/8 октантів ({clouds_pct}%)\n" \
                      f"👁 **Видимість:** {vis_points}\n" \
                      f"💨 **Вітер біля землі:** {w_speed_10} м/с | Пориви: {w_gusts} м/с | Напрямок: {w_dir_10}°\n" \
-                     f"────────────────────────\n"
+                    f"────────────────────────\n" \
+                    f"🛫 Веселих польотів! RsPz"
                      
             bot.send_message(chat_id, report, parse_mode="Markdown")
             log_user_activity(call, "Отримав повний звіт (всі ешелони)", flight_data['name'])
