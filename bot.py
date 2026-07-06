@@ -59,7 +59,21 @@ def handle_time_callback(call):
     clouds_octant = get_octants(hourly['cloudcover'][idx])
     
     # Словник висот (додайте всі свої 12 значень сюди)
-    speed_map = { 50: (w_speed_50, w_dir_50), 100: (w_speed_100, w_dir_100), ... }
+   # Словник з усіма вашими висотами та змінними
+    speed_map = {
+        50: (w_speed_50, w_dir_50),
+        100: (w_speed_100, w_dir_100),
+        110: (w_speed_110, w_dir_110),
+        150: (w_speed_150, w_dir_150),
+        300: (w_speed_300, w_dir_300),
+        500: (w_speed_500, w_dir_500),
+        540: (w_speed_540, w_dir_540),
+        760: (w_speed_760, w_dir_760),
+        980: (w_speed_980, w_dir_980),
+        1450: (w_speed_1450, w_dir_1450),
+        1500: (w_speed_1500, w_dir_1500),
+        1950: (w_speed_1950, w_dir_1950)
+    }
 
     report = f"✈️ **АВІАЦІЙНИЙ ЗВІТ**\n📍 {flight_data['name']}\n" \
              f"👁 **Видимість:** {vis_display}\n" \
