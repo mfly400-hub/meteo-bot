@@ -36,7 +36,7 @@ def log_user_activity(message, action_type, details):
 @bot.message_handler(commands=['start'])
 def start(message):
     log_user_activity(message, "Команда /start", "Запуск бота")
-    text = "👋 Вітаю! Я Ваш веселий авіаційний метео-помічник.\n\n" \
+    text = "👋 Вітаю! Я Ваш надійний авіаційний метео-помічник.\n\n" \
            "Надішліть мені **координати**, **посилання на карту** або **назву міста**, щоб отримати повний звіт по всіх ешелонах висоти."
     bot.send_message(message.chat.id, text)
 
@@ -240,7 +240,7 @@ def handle_time_callback(call):
                      f"🔺 **1500 м:** {w_speed_1500} м/с | Напрямок: {w_dir_1500}°\n" \
                      f"🔺 **1950 м:** {w_speed_1950} м/с | Напрямок: {w_dir_1950}°\n" \
                      f"────────────────────────\n" \
-                     f"🛫 Веселийх польотів! RsPz"
+                     f"🛫 Веселих польотів! RsPz"
                      
             bot.send_message(chat_id, report, parse_mode="Markdown")
             log_user_activity(call, "Отримав повний звіт (всі ешелони)", flight_data['name'])
