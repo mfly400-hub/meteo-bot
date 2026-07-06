@@ -39,10 +39,74 @@ def set_heights(message):
 
 @bot.message_handler(content_types=['text'])
 def handle_text(message):
-    if message.text.startswith('/'): return
-    # Логіка геокодингу (тут має бути ваш робочий код)
-    # Після визначення lat/lon:
-    user_flights[message.chat.id] = {'lat': lat, 'lon': lon, 'name': location_name}
+    if message.text.startswith('/'): 
+        return
+        
+    chat_id = message.chat.id
+    text = message.text.strip()
+    
+    lat, lon, location_name = None, None, ""
+
+    # 1. Спроба знайти координати (числа через кому)
+    coord_match = re.search(r'(-?\d+[\.,]\d+)\s*,\s*(-?\d+[\.,]\d+)', text)
+    
+    # 2. Спроба обробити посилання або назву
+    if coord_match:
+        lat = float(coord_match.group(1).replace(',', '.'))
+        lon = float(coord_match.group(2).replace(',', '.'))
+        location_name = f"Точка ({round(lat, 4)}, {round(lon, 4)})"
+        
+    elif "maps" in text or "google" in text or text.startswith("http"):
+        bot.send_message(chat_id, "🔍 Аналізую посилання...")
+        try:
+            headers = {'User-Agent': 'Mozilla/5.0'}
+            response = requests.get(text, allow_redirects=True, headers=headers, timeout=7)
+            final_url = response.url
+            
+            # Шукаємо координати в посиланні
+            url_match = re.search(r'@(-?\d+\.\d+),(-?\d+\.\d+)', final_url) or \
+                        re.search(r'[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)', final_url) or \
+                        re.search(r'!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)', final_url)
+            
+            if url_match:
+                lat, lon = float(url_match.group(1)), float(url_match.group(2))
+                location_name = f"Локація з мапи ({round(lat, 4)}, {round(lon, 4)})"
+            else:
+                bot.send_message(chat_id, "❌ Не знайшов координати в посиланні.")
+                return
+        except Exception as e:
+            bot.send_message(chat_id, "❌ Помилка зчитування посилання.")
+            return
+            
+    else:
+        # 3. Пошук за назвою міста
+        bot.send_message(chat_id, f"🔍 Шукаю: {text}...")
+        geo_url = f"https://geocoding-api.open-meteo.com/v1/search?name={text}&count=1&language=uk"
+        try:
+            geo_data = requests.get(geo_url).json()
+            if geo_data.get('results'):
+                res = geo_data['results'][0]
+                lat, lon = res['latitude'], res['longitude']
+                location_name = f"{res['name']} ({res.get('country', '')})"
+            else:
+                bot.send_message(chat_id, "❌ Місто не знайдено.")
+                return
+        except:
+            bot.send_message(chat_id, "❌ Помилка пошуку.")
+            return
+
+    # Якщо координати знайдені — створюємо кнопки
+    if lat is not None and lon is not None:
+        user_flights[chat_id] = {'lat': lat, 'lon': lon, 'name': location_name}
+        
+        keyboard = telebot.types.InlineKeyboardMarkup()
+        now = datetime.now()
+        keyboard.add(telebot.types.InlineKeyboardButton("⏱️ Зараз", callback_data=f"time_{now.strftime('%Y-%m-%dT%H:00')}"))
+        for hours in [3, 6, 12]:
+            future = now + timedelta(hours=hours)
+            keyboard.add(telebot.types.InlineKeyboardButton(f"⏳ Через {hours} год", callback_data=f"time_{future.strftime('%Y-%m-%dT%H:00')}"))
+        
+        bot.send_message(chat_id, f"📍 {location_name}\nОберіть час:", reply_markup=keyboard)
     # (Вивід кнопок часу як у вас було)
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('time_'))
