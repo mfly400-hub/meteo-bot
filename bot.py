@@ -14,7 +14,7 @@ logging.basicConfig(
     ]
 )
 
-TOKEN = "8679032582:AAGljGFF_n40NgLynM4Jtndyr_tHg74JgZI"
+TOKEN = "8679032582:AAGiQ26XZRbQAoA7NgNIET_Ld3d8IpDRzs8"
 bot = telebot.TeleBot(TOKEN)
 
 user_flights = {}
