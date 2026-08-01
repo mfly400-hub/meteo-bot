@@ -3,7 +3,7 @@ import re
 import logging
 import requests
 from datetime import datetime, timedelta
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 import telebot
 
 # Налаштування логування: запис у файл bot_activity.log та вивід у консоль
