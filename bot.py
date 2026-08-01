@@ -1,8 +1,10 @@
-import telebot
-import requests
+import os
 import re
 import logging
+import requests
 from datetime import datetime, timedelta
+from dotenv import load_dotenv
+import telebot
 
 # Налаштування логування: запис у файл bot_activity.log та вивід у консоль
 logging.basicConfig(
@@ -13,8 +15,9 @@ logging.basicConfig(
         logging.StreamHandler()
     ]
 )
+load_dotenv()
 
-TOKEN = "8679032582:AAGiQ26XZRbQAoA7NgNIET_Ld3d8IpDRzs8"
+TOKEN = os.getenv("BOT_TOKEN")
 bot = telebot.TeleBot(TOKEN)
 
 user_flights = {}
